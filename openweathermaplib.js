@@ -1,4 +1,4 @@
-var owmLib = (function () {
+var WeatherLib = (function () {
 	'use strict';
 
 	var conf = {
@@ -19,35 +19,58 @@ var owmLib = (function () {
 		}
 	}
 
-	var reqAPI = function (urlOptions) {
-		var urlQueryString = 'http://api.openweathermap.org/data/2.5/weather?';
+	var reqAPI = function (apiPath, urlOptions, callback, onError) {
+		var urlQueryString = 'http://api.openweathermap.org/data/2.5/' + apiPath + '?';
 		for (var key in urlOptions) {
 			urlQueryString += key + '=' + urlOptions[key] + '&';
 		}
+		urlQueryString += 'units=' + conf.measSystem;
+		urlQueryString += '&APPID=' + conf.APIkey;
+
+		var callbackFunction = callback || function(){};
+		var onErrorFunction = onError || function(){};
 
 		var request = new XMLHttpRequest();
+		request.timeout = conf.reqTimeout;
+
+		request.onerror = onErrorFunction;
 		request.onload = function(data) {
-			alert(request.responseText);
+			if (this.status == 200) {
+				var responseJSON = JSON.parse(request.responseText);
+				if (responseJSON.cod == 200) {
+					callbackFunction();
+					return;
+				}
+			}
+			
+			onErrorFunction();
 		}
 
 		request.open('GET', urlQueryString, true);
 		request.send();
 	};
 
-	var reqCurrentCoord = function (lat, lon) {
-		reqAPI({
+	var reqCurrentCoord = function (lat, lon, callback, onError) {
+		reqAPI('weather', {
 			lat: lat,
 			lon: lon
-		})
+		}, callback, onError);
 	}
 
-	var reqCustom = function (urlOptions) {
-		reqAPI(urlOptions);
+	var reqCurrentCity = function (city, callback, onError) {
+		reqAPI('weather', {
+			q: city
+		});
+	}
+
+	var reqCustom = function (urlOptions, callback, onError) {
+		reqAPI(urlOptions, callback, onError);
 	}
 
 	return {
 		config: config,
 		reqCurrentCoord: reqCurrentCoord,
+		reqCurrentCity: reqCurrentCity,
 		reqCustom: reqCustom
 	};
 
