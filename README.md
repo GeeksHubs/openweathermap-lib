@@ -1,4 +1,4 @@
 openweathermap-lib
 ==================
 
-Javascript Library for the OpenWeatherMap api.
+A JS library that makes async requests to openweathermap.org API.

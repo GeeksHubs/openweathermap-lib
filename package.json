@@ -1,0 +1,29 @@
+{
+  "name": "openweathermap-lib",
+  "version": "0.1.0",
+  "description": "A JS library that makes async requests to openweathermap.org API.",
+  "author": "Marios Isaakidis <misaakidis@yahoo.gr>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GeeksHubs/openweathermap-lib"
+  },
+  "bugs": {
+    "url": "https://github.com/GeeksHubs/openweathermap-lib/issues"
+  },
+  "keywords": [
+    "openweathermap",
+    "weather"
+  ],
+  "licenses": [{
+    "type": "MIT",
+    "url": "https://github.com/GeeksHubs/openweathermap-lib/blob/master/LICENSE"
+  }],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-uglify": "~0.6.0",
+    "grunt-jsbeautifier": "~0.2.7",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-copy": "0.7.0"
+  }
+}
