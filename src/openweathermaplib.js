@@ -12,12 +12,26 @@
 
 /**
  * @file A JS library that makes async requests to openweathermap.org API.
- * @author <a href="mailto:misaakidis@yahoo.gr">Marios Isaakidis</a>
+ * @author Marios Isaakidis <a href="mailto:misaakidis@yahoo.gr">misaakidis@yahoo.gr</a>
  */
 
+/**
+ * @module WeatherLib
+ */
+
+/**
+ * The module this library exports.
+ * @lends module:WeatherLib
+ */
 var WeatherLib = (function () {
   'use strict';
 
+  /**
+   * Configuration object
+   * @private
+   * @memberOf module:WeatherLib
+   * @type {json}
+   */
   var conf = {
     APIkey: '52977103b38b2cf43df8ecfb577874c4',
     measSystem: 'metric',
@@ -25,6 +39,10 @@ var WeatherLib = (function () {
     lang: 'en'
   };
 
+  /**
+   * @function
+   * @memberOf module:WeatherLib
+   */
   var config = function (newConf) {
     if (newConf.APIkey !== undefined) {
       conf.APIkey = newConf.APIkey;
@@ -43,14 +61,15 @@ var WeatherLib = (function () {
   /**
    * Private function that makes the GET request to openweathermap.org servers
    *
-   * @function WeatherLib#reqApi
+   * @function
+   * @memberOf module:WeatherLib
    * @private
-   * @param {String} apiPath The API resource to request
-   * @param {JSON} urlOptions Any options to be included in the query (e.g. city or coordinates)
+   * @param {string} apiPath The API resource to request
+   * @param {json} urlOptions Any options to be included in the query (e.g. city or coordinates)
    * @param {Function} [callback] The function to be executed after a successful request
-   * @param {Object} [callbackOptions] The object to be passed to callback function
-   * @param {Function} [onError] The callback function to be executed when a request fails/timeouts
-   * @param {Object} [onErrorOptions] The object to be passed to onError function
+   * @param {object} [callbackOptions] The object to be passed to callback function
+   * @param {function} [onError] The callback function to be executed when a request fails/timeouts
+   * @param {object} [onErrorOptions] The object to be passed to onError function
    */
   var reqAPI = function (apiPath, urlOptions, callback, callbackOptions, onError, onErrorOptions) {
     var urlQueryString = 'http://api.openweathermap.org/data/2.5/' + apiPath + '?';
@@ -84,6 +103,10 @@ var WeatherLib = (function () {
     request.send();
   };
 
+  /**
+   * @function
+   * @memberOf module:WeatherLib
+   */
   var reqCurrentCoord = function (lat, lon, callback, callbackOptions, onError, onErrorOptions) {
     reqAPI('weather', {
       lat: lat,
@@ -91,12 +114,18 @@ var WeatherLib = (function () {
     }, callback, callbackOptions, onError, onErrorOptions);
   };
 
+  /** @function
+   * @memberOf module:WeatherLib
+   */
   var reqCurrentCity = function (city, callback, callbackOptions, onError, onErrorOptions) {
     reqAPI('weather', {
       q: city
     }, callback, callbackOptions, onError, onErrorOptions);
   };
 
+  /** @function
+   * @memberOf module:WeatherLib
+   */
   var reqCustom = function (urlOptions, callback, callbackOptions, onError, onErrorOptions) {
     reqAPI(urlOptions, callback, callbackOptions, onError, onErrorOptions);
   };

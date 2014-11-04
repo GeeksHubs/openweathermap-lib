@@ -2,8 +2,7 @@ module.exports = function (grunt) {
 
   'use strict';
 
-  var bannerContent = '/*! <%= pkg.name %> v<%= pkg.version %> \n ' +
-    ' *  License: <%= pkg.license %> */';
+  var bannerContent = '/*! <%= pkg.name %> v<%= pkg.version %> --  License: <%= pkg.licenses[0].type %> */';
   var name = '<%= pkg.name %>-v<%= pkg.version%>';
 
   grunt.initConfig({
@@ -28,11 +27,16 @@ module.exports = function (grunt) {
     },
 
     jshint: {
-      target: ['package.json', 'Gruntfile.js', 'src/.jshintrc', 'src/**/*.js'],
-      options: {
-        curly: true,
-        eqnull: true,
-        browser: true
+      target: ['package.json', 'Gruntfile.js', 'src/**/*.js']
+    },
+
+    jsdoc: {
+      target: {
+        src: ['src/**/*.js'],
+        options: {
+          destination: 'doc',
+          private: true
+        }
       }
     },
 
@@ -70,6 +74,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
-  grunt.registerTask('default', ['jsbeautifier', 'jshint', 'clean', 'copy', 'uglify']);
+  grunt.registerTask('default', ['jsbeautifier', 'jshint']);
+  grunt.registerTask('dist', ['jsbeautifier', 'jshint', 'jsdoc', 'clean', 'copy', 'uglify']);
 };
