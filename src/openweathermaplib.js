@@ -71,7 +71,7 @@ var WeatherLib = (function () {
    * @param {function} [onError] The callback function to be executed when a request fails/timeouts
    * @param {object} [onErrorOptions] The object to be passed to onError function
    */
-  var reqAPI = function (apiPath, urlOptions, callback, callbackOptions, onError, onErrorOptions) {
+  var reqAPI = function (apiPath, urlOptions, callback, callbackOptions, onError, onErrorOptions, async) {
     var urlQueryString = 'http://api.openweathermap.org/data/2.5/' + apiPath + '?';
     for (var key in urlOptions) {
       urlQueryString += key + '=' + urlOptions[key] + '&';
@@ -80,11 +80,17 @@ var WeatherLib = (function () {
     urlQueryString += '&lang=' + conf.lang;
     urlQueryString += '&APPID=' + conf.APIkey;
 
+    var request = new XMLHttpRequest();
+
     var callbackFunction = callback || function () {};
     var onErrorFunction = onError || function () {};
-
-    var request = new XMLHttpRequest();
-    request.timeout = conf.reqTimeout;
+    var asyncReq;
+    if (async === undefined || async) {
+      asyncReq = true;
+      request.timeout = conf.reqTimeout;
+    } else {
+      asyncReq = false;
+    }
 
     request.onerror = onErrorFunction;
     request.onload = function (data) {
@@ -99,7 +105,7 @@ var WeatherLib = (function () {
       onErrorFunction(this.status, onErrorOptions);
     };
 
-    request.open('GET', urlQueryString, true);
+    request.open('GET', urlQueryString, asyncReq);
     request.send();
   };
 
@@ -107,34 +113,102 @@ var WeatherLib = (function () {
    * @function
    * @memberOf module:WeatherLib
    */
-  var reqCurrentCoord = function (lat, lon, callback, callbackOptions, onError, onErrorOptions) {
+  var getCurrentCoord = function (lat, lon, callback, callbackOptions, onError, onErrorOptions, async) {
     reqAPI('weather', {
       lat: lat,
       lon: lon
-    }, callback, callbackOptions, onError, onErrorOptions);
+    }, callback, callbackOptions, onError, onErrorOptions, async);
   };
 
-  /** @function
+  /**
+   * @function
    * @memberOf module:WeatherLib
    */
-  var reqCurrentCity = function (city, callback, callbackOptions, onError, onErrorOptions) {
+  var getCurrentCity = function (city, callback, callbackOptions, onError, onErrorOptions, async) {
     reqAPI('weather', {
       q: city
-    }, callback, callbackOptions, onError, onErrorOptions);
+    }, callback, callbackOptions, onError, onErrorOptions, async);
   };
 
-  /** @function
+  /**
+   * @function
    * @memberOf module:WeatherLib
    */
-  var reqCustom = function (urlOptions, callback, callbackOptions, onError, onErrorOptions) {
+  var getForecastCoord = function (lat, lon, callback, callbackOptions, onError, onErrorOptions, async) {
+    reqAPI('forecast', {
+      lat: lat,
+      lon: lon
+    }, callback, callbackOptions, onError, onErrorOptions, async);
+  };
+
+
+  var parseResponse = function (responseJSON) {
+    var weatherJSON;
+    if (responseJSON.list === undefined) {
+      weatherJSON = {
+        location: responseJSON.name,
+        country: responseJSON.sys.country,
+        wind: {
+          deg: responseJSON.wind.deg,
+          speed: responseJSON.wind.speed
+        },
+        humidity: responseJSON.main.humidity,
+        pressure: responseJSON.main.pressure,
+        temp: responseJSON.main.temp,
+        temp_max: responseJSON.main.temp_max,
+        temp_min: responseJSON.main.temp_min
+      }
+    } else {
+      weatherJSON = {
+        location: responseJSON.city.name,
+        country: responseJSON.city.country,
+      };
+
+      var forecasts = [];
+      for(var forecast in responseJSON.list) {
+        forecasts.push({
+          dt: responseJSON.list[forecast].dt,
+          temp: responseJSON.list[forecast].main.temp
+        });
+      }
+      weatherJSON.forecasts = forecasts;
+    }
+    return weatherJSON;
+  }
+
+  var getCurrentCoordJSON = function (lat, lon) {
+    var result;
+    getCurrentCoord(lat, lon, function(responseJSON){result = parseResponse(responseJSON);}, null, null, null, false);
+    return result;
+  };
+
+  var getForecastCoordJSON = function (lat, lon) {
+    var result;
+    getForecastCoord(lat, lon, function(responseJSON){result = parseResponse(responseJSON);}, null, null, null, false);
+    return result;
+  };
+
+  var getCurrentCityJSON = function (city) {
+    var result;
+    getCurrentCoord(city, function(responseJSON){result = parseResponse(responseJSON);});
+    return result;
+  };
+
+  /**
+   * @function
+   * @memberOf module:WeatherLib
+   */
+  var getCustom = function (urlOptions, callback, callbackOptions, onError, onErrorOptions) {
     reqAPI(urlOptions, callback, callbackOptions, onError, onErrorOptions);
   };
 
   return {
     config: config,
-    reqCurrentCoord: reqCurrentCoord,
-    reqCurrentCity: reqCurrentCity,
-    reqCustom: reqCustom
+    getCurrentCoord: getCurrentCoord,
+    getCurrentCity: getCurrentCity,
+    getCustom: getCustom,
+    getCurrentCoordJSON: getCurrentCoordJSON,
+    getForecastCoordJSON: getForecastCoordJSON
   };
 
 })();
