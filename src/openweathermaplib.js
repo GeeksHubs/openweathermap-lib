@@ -141,7 +141,6 @@ var WeatherLib = (function () {
     }, callback, callbackOptions, onError, onErrorOptions, async);
   };
 
-
   var parseResponse = function (responseJSON) {
     var weatherJSON;
     if (responseJSON.list === undefined) {
@@ -156,8 +155,11 @@ var WeatherLib = (function () {
         pressure: responseJSON.main.pressure,
         temp: responseJSON.main.temp,
         temp_max: responseJSON.main.temp_max,
-        temp_min: responseJSON.main.temp_min
-      }
+        temp_min: responseJSON.main.temp_min,
+        weather_code: responseJSON.weather[0].id,
+        short_desc: responseJSON.weather[0].main,
+        long_desc: responseJSON.weather[0].description
+      };
     } else {
       weatherJSON = {
         location: responseJSON.city.name,
@@ -165,7 +167,7 @@ var WeatherLib = (function () {
       };
 
       var forecasts = [];
-      for(var forecast in responseJSON.list) {
+      for (var forecast in responseJSON.list) {
         forecasts.push({
           dt: responseJSON.list[forecast].dt,
           temp: responseJSON.list[forecast].main.temp
@@ -174,23 +176,29 @@ var WeatherLib = (function () {
       weatherJSON.forecasts = forecasts;
     }
     return weatherJSON;
-  }
+  };
 
   var getCurrentCoordJSON = function (lat, lon) {
     var result;
-    getCurrentCoord(lat, lon, function(responseJSON){result = parseResponse(responseJSON);}, null, null, null, false);
-    return result;
-  };
-
-  var getForecastCoordJSON = function (lat, lon) {
-    var result;
-    getForecastCoord(lat, lon, function(responseJSON){result = parseResponse(responseJSON);}, null, null, null, false);
+    getCurrentCoord(lat, lon, function (responseJSON) {
+      result = parseResponse(responseJSON);
+    }, null, null, null, false);
     return result;
   };
 
   var getCurrentCityJSON = function (city) {
     var result;
-    getCurrentCoord(city, function(responseJSON){result = parseResponse(responseJSON);});
+    getCurrentCity(city, function (responseJSON) {
+      result = parseResponse(responseJSON);
+    }, null, null, null, false);
+    return result;
+  };
+
+  var getForecastCoordJSON = function (lat, lon) {
+    var result;
+    getForecastCoord(lat, lon, function (responseJSON) {
+      result = parseResponse(responseJSON);
+    }, null, null, null, false);
     return result;
   };
 
@@ -208,6 +216,7 @@ var WeatherLib = (function () {
     getCurrentCity: getCurrentCity,
     getCustom: getCustom,
     getCurrentCoordJSON: getCurrentCoordJSON,
+    getCurrentCityJSON: getCurrentCityJSON,
     getForecastCoordJSON: getForecastCoordJSON
   };
 

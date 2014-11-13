@@ -1,6 +1,6 @@
 {
   "name": "openweathermap-lib",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A JS library that makes async requests to openweathermap.org API.",
   "author": "Marios Isaakidis <misaakidis@yahoo.gr>",
   "repository": {
