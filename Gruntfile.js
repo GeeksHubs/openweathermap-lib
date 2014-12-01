@@ -9,19 +9,19 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     jsbeautifier: {
-      files: ['package.json', 'Gruntfile.js', "src/**/*.js"],
+      files: ['package.json', 'Gruntfile.js', 'src/**/*.js'],
       options: {
         js: {
-          "indent_size": 2,
-          "indent_char": " ",
-          "other": " ",
-          "indent_level": 0,
-          "indent_with_tabs": false,
-          "preserve_newlines": true,
-          "max_preserve_newlines": 2,
-          "jslint_happy": true,
-          "indent_handlebars": true,
-          "object": {}
+          'indent_size': 2,
+          'indent_char': ' ',
+          'other': ' ',
+          'indent_level': 0,
+          'indent_with_tabs': false,
+          'preserve_newlines': true,
+          'max_preserve_newlines': 2,
+          'jslint_happy': true,
+          'indent_handlebars': true,
+          'object': {}
         }
       }
     },
@@ -50,7 +50,7 @@ module.exports = function (grunt) {
       target: {
         expand: true,
         cwd: 'src/',
-        src: '**/*.js',
+        src: 'openweathermaplib.js',
         dest: 'dist/'
       }
     },
@@ -63,7 +63,7 @@ module.exports = function (grunt) {
         sourceMapUrl: name + '.min.js.map'
       },
       target: {
-        src: ['src/**/*.js'],
+        src: ['src/openweathermaplib.js'],
         dest: 'dist/' + name + '.min.js'
       }
     }
